@@ -2,6 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/layout/Header";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { CategorySidebar } from "@/components/layout/CategorySidebar";
+import { CategoryIcons } from "@/components/layout/CategoryIcons";
 import { categories } from "@/lib/categories";
 import { listings, getFeaturedListings } from "@/lib/mock-data";
 import { formatPrice, formatDate } from "@/lib/utils";
@@ -16,36 +18,14 @@ export default function HomePage() {
 
       <div className="container" style={{ marginTop: 20 }}>
         <div style={{ display: "flex", gap: 24 }}>
-          {/* Left sidebar - Categories (Kleinanzeigen style) */}
-          <aside style={{ width: 220, flexShrink: 0 }} className="hide-mobile">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-              <span style={{ fontWeight: 700, fontSize: 14, color: "#33322e" }}>Категории</span>
-              <Link href="/search" style={{ fontSize: 12, color: "#86b817" }}>Всички обяви</Link>
-            </div>
-
-            {categories.map((cat) => (
-              <div key={cat.id} className="cat-section">
-                <h3>
-                  <Link href={`/category/${cat.slug}`} style={{ color: "#33322e", textDecoration: "none" }}>
-                    {cat.name}
-                  </Link>
-                </h3>
-                {cat.subcategories.slice(0, 2).map((sub) => (
-                  <Link key={sub.slug} href={`/category/${cat.slug}`}>
-                    {sub.name}
-                  </Link>
-                ))}
-                {cat.subcategories.length > 2 && (
-                  <Link href={`/category/${cat.slug}`} className="more">
-                    Още ...
-                  </Link>
-                )}
-              </div>
-            ))}
-          </aside>
+          {/* Left sidebar - Categories (Locanto style with colored icons) */}
+          <CategorySidebar />
 
           {/* Right content area */}
           <main style={{ flex: 1, minWidth: 0 }}>
+            {/* Milanuncios-style horizontal category icons */}
+            <CategoryIcons />
+
             {/* Gallery - Featured listings (Kleinanzeigen style) */}
             <section style={{ marginBottom: 24 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
