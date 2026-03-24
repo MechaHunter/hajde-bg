@@ -3,8 +3,10 @@
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { Header } from "@/components/layout/Header";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { listings } from "@/lib/mock-data";
-import { ListingCard } from "@/components/listings/ListingCard";
+import { formatPrice, formatDate } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -12,48 +14,42 @@ export default function ProfilePage() {
   const seller = sellerListings[0]?.seller || listings[0].seller;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Profile Header */}
-      <div className="relative mb-8">
-        <div className="h-32 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl" />
-        <div className="flex flex-col sm:flex-row items-start gap-4 -mt-12 px-6">
-          <Image
-            src={seller.avatar}
-            alt={seller.name}
-            width={96}
-            height={96}
-            className="rounded-2xl border-4 border-white dark:border-gray-950 shadow-lg"
-          />
-          <div className="pt-2 sm:pt-14">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold">{seller.name}</h1>
-              {seller.isVerified && (
-                <svg className="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              )}
-            </div>
-            <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-              <span className="flex items-center gap-1">
-                <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                </svg>
-                {seller.rating} ({seller.reviewCount} отзива)
-              </span>
-              <span>Член от {new Date(seller.memberSince).getFullYear()}</span>
-              <span className="text-emerald-500">Отговаря за {seller.responseTime}</span>
+    <>
+      <Header />
+      <div className="container" style={{ marginTop: 20 }}>
+        {/* Seller info */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24, padding: 20, background: "#f9f9f9", borderRadius: 8 }}>
+          <Image src={seller.avatar} alt="" width={64} height={64} style={{ borderRadius: "50%" }} />
+          <div>
+            <h1 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 4px" }}>
+              {seller.name}
+              {seller.isVerified && <span style={{ color: "#86b817", marginLeft: 6 }} title="Потвърден">&#10003;</span>}
+            </h1>
+            <div style={{ fontSize: 13, color: "#999" }}>
+              {seller.rating}/5 ({seller.reviewCount} отзива) &middot; Член от {new Date(seller.memberSince).getFullYear()} &middot; Отговаря за {seller.responseTime}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Listings */}
-      <h2 className="text-xl font-bold mb-4">Обяви ({sellerListings.length || listings.length})</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {(sellerListings.length > 0 ? sellerListings : listings.slice(0, 4)).map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
-        ))}
+        <h2 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>Обяви ({sellerListings.length || listings.length})</h2>
+
+        {/* Listings - Craigslist list style */}
+        <div>
+          {(sellerListings.length > 0 ? sellerListings : listings.slice(0, 6)).map((item) => (
+            <div key={item.id} className="result-row">
+              {item.images[0] && (
+                <Image src={item.images[0]} alt="" width={80} height={60} className="result-thumb" />
+              )}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <Link href={`/listing/${item.id}`} className="result-title">{item.title}</Link>
+                <div className="result-meta">{item.city} &middot; {formatDate(item.createdAt)}</div>
+              </div>
+              <div className="result-price">{formatPrice(item.price, item.currency)}</div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+      <SiteFooter />
+    </>
   );
 }
